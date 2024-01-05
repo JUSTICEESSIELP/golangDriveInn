@@ -11,5 +11,5 @@ type User struct {
 	Password       string `json:"password"`
 	SocialLogin    bool   `json:"social_login"`
 	SocialProvider string `json:"social_provider"`
-	// CreatedAt and UpdatedAt are included in gorm.Model
+
 }

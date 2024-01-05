@@ -217,12 +217,208 @@ So when making a request to an external server or database or service we need to
 
 hupdp
 
-/5000 _/ port
+/5000 \_/ port
 localhost hostName
 driveinnadmin username
 driveinnpostgres maintenance db
 Alchemistry password
 
+we also need to get the validator package for the database we get the MOdel VAlidation from iris
+
+HOW TO LEARN DOCKER  
+now that we have multiple microservices which may or may not be in mulitple languages have different ways of installing , configuring and deploying the microservices..
+
+so you create the image of the service so that once you givethe image there are standardized
+
+you can run docker containers in cloud on your local pc as well
+
+1. Try to understand the process of building an image
+2. try to understand how to run an already made image [ mostly done with a single cli command]
+3. Docker swarm or kubernetes to help orchestrate several images
+
+some may say that virtual machines solved the problem before docker
+
+WHAT VIRTUAL MACHINES CONSIST OF
+
+1. A VM contains:
+
+   - The code
+   - The dependencies
+   - The configurations
+
+   - we run the VM on the physical machine
+     through a Hypervisor
+
+   BUT
+
+   the problem is that the VM mahcines have
+   their own operating system
+   VM must be configured correctly to work
+   There is no standard way .. VM are created in different ways
+
+   CONTAINER: its a like a package with your software but technically its an isolated linux process.... so with this you can at the same time use containers with different versions
+
+   image is like the class
+   container is like instance of a class
+
+   DOCKER ARCHITECUTURE
+   Docker uses a client -server architecture
+   The client talks to the daemon(server) which manages docker objects
+   There are 4 types of docker objects
+
+   1. Containers
+   2. Images: read only templates that contain instructions and meta data for creating Docker containers
+   3. Networks
+   4. Volumes
+
+\***_Related to Docker images_**
+you can use existing images
+Create a custom one based on a previous one
+Start from scratch
+
+Images can be created with a Dockerfile
+one instruction creates a layer
+Docker caches so if the instruction is not changed it does not build a new layer for that instruction \***_Related to Docker images_**
+
+Docker containers :they are runnable instances of an image . Multiple containers can be instantiated from the same image
+
+They can be created / started / stopped / deleted using the Docker /Api /Cli
+
+They are isolated from other containers and the host machines using namespaces(linux feature )
+
+image gives a container its one file system
+
+images have
+
+- dependencies
+  -configuration
+- binaries
+- environment variables
+- other data container-related
+
+Many containers can be run from a single image, with different options
+
+Many containers communicating with each other come in different ways because remember that the containers are isolated
+
+FOR CONTAINERS TO COMMUNICATE THEY NEED TO BE ON THE SAME NETWORK
+5 types of networks
+
+1.  Bridge(default): allows containers connected to communicate, and it provides isolation from containers that are not connected to the Bridge//
+    the hello Docker container is mostly on a Bridge network by default
+    if we want different classes of containers talking on the same host machine then we need different bridge networks ... so bridge network of one application and for another application
+2.  HOST: LIKE I said earlier the containers are isolated by default from the host machine or my laptop as well as other containers but we can make a network to remove that isolation and use a host network to connect the containers to the host machine
+
+3.  Overlay network : to connect Docker daemons . like places the containers on the net . Enables docker swarm
+
+4.  MacVLan : For more legacy applications. Links the containers to unique MAC address that the Docker daemon is having access to
+
+5.  No network : Creating a container that is completely isolated and connected to nothing
+
+DOCKER VOLUMES (storage)
+
+docker ps -a : cli command to see all containers be it running or stopped
+
+docker images
+
+docker network ls
+
+docker volume ls
+
+docker run <container_name> : means run a container
+
+eg: docker run hello-world
+
+docker run nginx  
+this runs a container from the nginx image
+
+docker run --name mynginx nginx
+this runs a container called "mynginx" from the nginx image
+
+when we run a process [container ] it can end /stop when a process is done it automatically terminates itself
+
+what if we want to make a container that would not stop or terminate itself
+
+DOCKER HUB ; this is where we store the images NOT containers but images
+
+YOU CANNOT REMOVE A RUNNING CONTAINER
+you have to stop the container first
+
+docker stop <id/container_name>
+
+docker rm <id/container_name>
+
+docker rm -f <id/container_name>
+
+// choosing the exact version
+docker run -p 8080:80 -d nginx:1.24
+:latest
+
+**_CREATING YOUR OWN IMAGE : dockerize a node application_**
+
+1. create a .dockerignore file
+2. create a dockerfile called Dockerfile capital D
+
+in Dockerfile
+
+// alpine is a reduced version of node
+---FROM node:12.6.1-alpine3.11
+
+---WORDKIR /usr/src/app
+what happens is creates a directory in the file system of the docker image
+
+//install app depenc
+---COPY packages*.json ./  
+ the * is a regex incase we dont hvae package-lock.json
+
+---RUN npm install
+
+--- COPY . .  
+this means that copy everything in the directory of the dockerfile
+
+// export port 3000
+--- EXPOSE 3000
+
+// run the app
+CMD ["node", "start"]
+
+.dockerignore the things we dont want to put in another system
+
+HOW TO BUILD YOUR IMAGE CLI COMMAND AFTER MAKING DOCKERFILE AND .dockerignore file
+
+-t this stands for tag
+docker build -t <image_name> <directory>
+
+docker build -t nodeapp .  
+. means the current directory
+
+HOW TO GET INSIDE A CONTAINER
+
+docker --exec // this is how we start the cli command to get inside a container
+
+exit // to get out a docker container
+
+PUTTING OUR IMAGE ON DOCKER HUB TO TRY IT ON A DIFFERENT MACHINE
+
+Login into Docker
+docker login -u <username>
+Publish an image to Docker Hub
+docker push <username>/<image_name>
+eg: docker push nodeapp
+
+Search Hub for an image
+docker search <image_name>
+Pull an image from a Docker Hub
 
 
-we also need to get the validator package for the database we get the MOdel VAlidation from iris 
+
+
+
+HOW TO TACKLE 'denied: requested access to the resources is denied'
+docker tag <previous_image_name> <new_image_name>:<version>
+docker tag nodeapp francescoxx/nodeapp2:1.0.0
+
+
+
+if we push an image /image repository to docker hub like pushing code to a github repo 
+
+so if we do that and that image repository does not exist it creates the repository automatically 
